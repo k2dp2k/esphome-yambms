@@ -19,6 +19,22 @@
 packages:
   bms_cycles_base: !include bms_charging_cycles_base.yaml
 
+globals:
+  - id: bms${bms_id}_online_ms
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+
+script:
+  - id: bms${bms_id}_online_timer
+    mode: restart
+    then:
+      - delay: 65s
+      - lambda: |-
+          if (millis() - id(bms${bms_id}_online_ms) >= 65000) {
+            id(bms${bms_id}_online_status).publish_state(false);
+          }
+
 
   # +-----------------------------------------------+
   # | DEYE CAN PCS module frames                    |
@@ -32,6 +48,9 @@ canbus:
     - can_id: 0x11${deye_module_id}
       then:
         - lambda: |-
+            id(bms${bms_id}_online_ms) = millis();
+            id(bms${bms_id}_online_status).publish_state(true);
+            id(bms${bms_id}_online_timer).execute();
             id(bms${bms_id}_heat_mos_state).publish_state(x[7] & 0x80);
             id(bms${bms_id}_precharge_mos_state).publish_state(x[7] & 0x40);
             id(bms${bms_id}_discharge_mos_state).publish_state(x[7] & 0x20);
@@ -41,6 +60,9 @@ canbus:
     - can_id: 0x15${deye_module_id}
       then:
         - lambda: |-
+            id(bms${bms_id}_online_ms) = millis();
+            id(bms${bms_id}_online_status).publish_state(true);
+            id(bms${bms_id}_online_timer).execute();
             float voltage = ((x[1] << 8) | x[0]) / 10.0;
             id(bms${bms_id}_total_voltage).publish_state(voltage);
             float current = ((x[3] << 8) | x[2]) / -10.0;
@@ -55,6 +77,9 @@ canbus:
     - can_id: 0x20${deye_module_id}
       then:
         - lambda: |-
+            id(bms${bms_id}_online_ms) = millis();
+            id(bms${bms_id}_online_status).publish_state(true);
+            id(bms${bms_id}_online_timer).execute();
             float cell_u_max = ((x[1] << 8) | x[0]) / 1000.0;
             id(bms${bms_id}_max_cell_voltage).publish_state(cell_u_max);
             float cell_u_min = ((x[3] << 8) | x[2]) / 1000.0;
@@ -68,6 +93,9 @@ canbus:
     - can_id: 0x25${deye_module_id}
       then:
         - lambda: |-
+            id(bms${bms_id}_online_ms) = millis();
+            id(bms${bms_id}_online_status).publish_state(true);
+            id(bms${bms_id}_online_timer).execute();
             float mosmax = ((x[1] << 8) | x[0]) / 10.0;
             if(x[1] > 0x80) mosmax = uint16_t(~((x[1] << 8) | x[0]) + 1) / -10.0;
             id(bms${bms_id}_mosmax).publish_state(mosmax);
@@ -83,6 +111,9 @@ canbus:
     - can_id: 0x40${deye_module_id}
       then:
         - lambda: |-
+            id(bms${bms_id}_online_ms) = millis();
+            id(bms${bms_id}_online_status).publish_state(true);
+            id(bms${bms_id}_online_timer).execute();
             // Process frame
             id(bms${bms_id}_operation_mode_internal).publish_state(x[0]);
             if(x[1] == 0) id(bms${bms_id}_fault_level).publish_state("no fault");
@@ -120,6 +151,9 @@ canbus:
     - can_id: 0x55${deye_module_id}
       then:
         - lambda: |-
+            id(bms${bms_id}_online_ms) = millis();
+            id(bms${bms_id}_online_status).publish_state(true);
+            id(bms${bms_id}_online_timer).execute();
             float charged = ((x[3] << 24) | (x[2] << 16) | (x[1] << 8) | x[0]) / 1000.0;
             id(bms${bms_id}_charged).publish_state(charged);
             float discharged = ((x[7] << 24) | (x[6] << 16) | (x[5] << 8) | x[4]) / 1000.0;
@@ -131,6 +165,9 @@ canbus:
     - can_id: 0x70${deye_module_id}
       then:
         - lambda: |
+            id(bms${bms_id}_online_ms) = millis();
+            id(bms${bms_id}_online_status).publish_state(true);
+            id(bms${bms_id}_online_timer).execute();
             id(bms${bms_id}_charge_over_voltage_count).publish_state((x[1] << 8) | x[0]);
             id(bms${bms_id}_discharge_under_voltage_count).publish_state((x[3] << 8) | x[2]);
             id(bms${bms_id}_short_circuit_count).publish_state((x[5] << 8) | x[4]);
@@ -139,21 +176,22 @@ canbus:
     - can_id: 0x75${deye_module_id}
       then:
         - lambda: |-
+            id(bms${bms_id}_online_ms) = millis();
+            id(bms${bms_id}_online_status).publish_state(true);
+            id(bms${bms_id}_online_timer).execute();
             id(bms${bms_id}_charge_over_current_count).publish_state((x[1] << 8) | x[0]);
             id(bms${bms_id}_discharge_over_current_count).publish_state((x[3] << 8) | x[2]);
             id(bms${bms_id}_charge_over_temp_count).publish_state((x[5] << 8) | x[4]);
             id(bms${bms_id}_discharge_over_temp_count).publish_state((x[7] << 8) | x[6]);
 
 binary_sensor:
-  # Online status: TODO
+  # Online status
   - platform: template
     id: bms${bms_id}_online_status
     name: "${name} ${bms_name} status online"
+    device_class: connectivity
     lambda: |-
-      if (id(bms${bms_id}_total_voltage).state > 0)
-        return true;
-      else
-        return false;
+      return (millis() - id(bms${bms_id}_online_ms)) < 65000;
 
   # Equalizing
   - platform: template
