@@ -37,7 +37,7 @@
   - Battery name
   - Alarms: Cell over/under voltage, Charge/discharge over current, High/low Temp, BMS fault
   
-**Note:** this code support `multi-BMS` and `multi-shunt` connection per inverter with a `single ESP32` and should work with inverters that support the CAN bus protocol `PYLON`, `SMA`, `Victron` or `LuxPower` (EG4). I'm only testing it with my `Deye SUN-6K-SG03-LP1-EU` inverter.
+**Note:** this code support `multi-BMS` and `multi-shunt` connection per inverter with a `single ESP32` and should work with inverters that support the CAN bus protocol `PYLON`, `SMA`, `Victron`, `LuxPower` or `Deye PCS`. I'm only testing it with my `Deye SUN-6K-SG03-LP1-EU` inverter.
 
 **This project is still in development and testing...<br>**
 
