@@ -92,6 +92,13 @@ views:
   - title: Einstellungen
     cards:
       - type: entities
+        title: CANBUS Protokoll
+        entities:
+          - entity: select.yambms_canbus_1_bms_name
+            name: BMS Name
+          - entity: select.yambms_canbus_1_protocol
+            name: Inverter Protocol
+      - type: entities
         title: Grundsteuerung
         entities:
           - entity: switch.yambms_yambms_1_charge_enabled
