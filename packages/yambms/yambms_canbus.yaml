@@ -70,7 +70,7 @@ select:
       - "SMA"
       - "Victron"
       - "LuxPower"
-      # - "Deye PCS (beta)"
+      - "Deye PCS"
     restore_value: true
     initial_option: "PYLON V2"
     optimistic: true

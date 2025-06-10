@@ -21,6 +21,7 @@ Other configurations are possible, don't hesitate to communicate what works well
 | Inverter | Battery mode | CAN protocol |
 | --- | --- | --- |
 | Deye | Lithium 00 | PYLON 1.2 |
+| Deye PCS | Lithium 00 | Deye PCS |
 | GoodWe | LX U5.4-L | PYLON + |
 | Sofar | Automatic | PYLON 1.2 |
 | Growatt | CAN L52 | PYLON 1.2 |
@@ -74,7 +75,7 @@ This function allows you to force a charge from `GRID` :
 - when `SoC <= Start SoC` the forced charge start
 - when `SoC >= Stop SoC` the forced charge stop
 
-Works only with `PYLON`, `LuxPower` and `Victron` protocols.
+Works only with `PYLON`, `LuxPower`, `Victron` and `Deye PCS` protocols.
 
 ## Auto functions
 
