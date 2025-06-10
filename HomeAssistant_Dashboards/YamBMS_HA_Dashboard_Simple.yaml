@@ -1,0 +1,116 @@
+# Updated : 2025.06.10
+# Version : 1.0.0
+# GitHub  : https://github.com/Sleeper85/esphome-yambms
+
+# YamBMS ( Yet another multi-BMS Merging Solution )
+
+# This YAML is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation, either version 3
+# of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
+
+views:
+  - title: Übersicht
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - graph: line
+            type: sensor
+            entity: sensor.yambms_yambms_1_total_voltage
+            name: Spannung
+            detail: 2
+            layout_options:
+              grid_columns: 2
+              grid_rows: 2
+            hours_to_show: 8
+          - graph: line
+            type: sensor
+            entity: sensor.yambms_yambms_1_battery_soc
+            name: SoC
+            detail: 2
+            hours_to_show: 8
+          - type: gauge
+            entity: sensor.yambms_yambms_1_current
+            name: Strom
+            needle: true
+            severity:
+              green: 0
+              yellow: -250
+              red: -500
+            max: 500
+            min: -500
+            layout_options:
+              grid_columns: 2
+              grid_rows: 3
+          - type: gauge
+            entity: sensor.yambms_yambms_1_power
+            name: Leistung
+            needle: true
+            severity:
+              green: 0
+              yellow: -2500
+              red: -5000
+            max: 5000
+            min: -5000
+            layout_options:
+              grid_columns: 2
+              grid_rows: 3
+          - type: tile
+            entity: sensor.yambms_yambms_1_battery_soh
+            name: Battery SoH
+          - type: tile
+            entity: sensor.yambms_yambms_1_capacity_remaining
+            name: Capacity Remaining
+        title: Batteriedaten
+        column_span: 1
+      - type: grid
+        cards:
+          - type: tile
+            entity: binary_sensor.yambms_canbus_1_status
+            name: CANBUS Status
+          - type: tile
+            entity: binary_sensor.yambms_esp32_online_status
+            name: ESP32 Status
+          - type: tile
+            entity: sensor.yambms_yambms_1_charging_status
+            name: Charging Status
+          - type: tile
+            entity: sensor.yambms_yambms_1_warning
+            name: Warning
+        title: Systemstatus
+        column_span: 1
+  - title: Einstellungen
+    cards:
+      - type: entities
+        title: CANBUS Protokoll
+        entities:
+          - entity: select.yambms_canbus_1_bms_name
+            name: BMS Name
+          - entity: select.yambms_canbus_1_protocol
+            name: Inverter Protocol
+      - type: entities
+        title: Grundsteuerung
+        entities:
+          - entity: switch.yambms_yambms_1_charge_enabled
+            name: Charge enabled
+          - entity: switch.yambms_yambms_1_discharge_enabled
+            name: Discharge enabled
+          - entity: switch.yambms_yambms_1_automatic_charge_voltage
+            name: Automatic Charge Voltage
+          - entity: number.yambms_yambms_1_bulk_voltage
+            name: Bulk voltage
+          - entity: number.yambms_yambms_1_float_voltage
+            name: Float voltage
+          - entity: button.yambms_esp32_restart
+            name: ESP32 Restart
+
