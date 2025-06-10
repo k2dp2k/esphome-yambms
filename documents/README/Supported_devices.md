@@ -67,7 +67,7 @@
 
 ## Supported inverter
 
-Inverters supporting CAN PYLON/Goodwe/SMA/Victron Low Voltage protocol should work, check your inverter manual to confirm.
+Inverters supporting CAN PYLON/Goodwe/SMA/Victron Low Voltage or Deye PCS protocol should work, check your inverter manual to confirm.
 
 The following are confirmed and known to work:
 
